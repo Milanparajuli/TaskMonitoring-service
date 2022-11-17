@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.taskmonitoring.system.enumtype.TaskStatus;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -28,4 +30,15 @@ public class Task implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	User user;
+	
+	private int status;
+	
+	public void setStatus(TaskStatus taskStatus) {
+		this.status = taskStatus.getValue();
+	}
+	
+	public TaskStatus getTaskStatus() {
+		return TaskStatus.getTaskStatus(status);
+	}
+	
 }

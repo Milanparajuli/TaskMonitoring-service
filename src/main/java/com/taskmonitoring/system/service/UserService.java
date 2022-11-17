@@ -20,6 +20,7 @@ import com.taskmonitoring.system.dto.UserResponseDto;
 import com.taskmonitoring.system.dto.UserUpdateDto;
 import com.taskmonitoring.system.entity.Task;
 import com.taskmonitoring.system.entity.User;
+import com.taskmonitoring.system.enumtype.TaskStatus;
 import com.taskmonitoring.system.repository.TaskRepository;
 import com.taskmonitoring.system.repository.UserRepository;
 import com.taskmonitoring.system.security.BCrypt;
@@ -110,20 +111,16 @@ public class UserService {
 	public TaskResponseDto addTask(TaskCreateDto request) {
 		Task tasks = new Task();
 		tasks.setTask(request.getTask());
-		
+
 		User user = new User();
 		user.setUserId(request.getUserId());
-		
+
 		tasks.setUser(user);
 
+		tasks.setStatus(TaskStatus.TODO);
+
 		Task savedTask = taskRepository.save(tasks);
-
-		TaskResponseDto response = new TaskResponseDto();
-
-		response.setTask(savedTask.getTask());
-		response.setId(savedTask.getId());
-		response.setUserId(request.getUserId());
-		return response;
+		return getTaskResponse(savedTask);
 	}
 
 	private TaskResponseDto getTaskResponse(Task saveTask) {
@@ -134,7 +131,7 @@ public class UserService {
 		response.setTask(saveTask.getTask());
 		response.setId(saveTask.getId());
 		response.setUserId(saveTask.getUser().getUserId());
-		
+		response.setTaskStatus(saveTask.getTaskStatus());
 		return response;
 
 	}
@@ -153,10 +150,11 @@ public class UserService {
 	}
 
 	public Task updateTask(Long id, TaskUpdateDto request) {
-		Optional<Task> optional =  taskRepository.findById(id);
-		if(optional.isPresent()) {
+		Optional<Task> optional = taskRepository.findById(id);
+		if (optional.isPresent()) {
 			Task tasks = optional.get();
 			tasks.setTask(request.getTask());
+			tasks.setStatus(request.getTaskStatus());
 			return taskRepository.save(tasks);
 		}
 		return null;
@@ -164,10 +162,10 @@ public class UserService {
 
 	public TaskResponseDto getTask(Long id) {
 		Optional<Task> optionalTask = taskRepository.findById(id);
-		if(optionalTask.isPresent()) {
+		if (optionalTask.isPresent()) {
 			return getTaskResponse(optionalTask.get());
 		}
-		
+
 		return null;
 	}
 
@@ -178,7 +176,7 @@ public class UserService {
 
 	public UserResponseDto getUserById(Long id) {
 		Optional<User> optionalUser = userRepository.findById(id);
-		if(optionalUser.isPresent()) {
+		if (optionalUser.isPresent()) {
 			return getUserResponse(optionalUser.get());
 		}
 		return null;
@@ -186,12 +184,12 @@ public class UserService {
 
 	public String login(LoginRequestDto request) {
 		User user = userRepository.findByUsername(request.getUsername());
-		if(user==null) {
+		if (user == null) {
 			return "Please Register first. User Dosent Exist";
 		}
-		
+
 		boolean checkpw = BCrypt.checkpw(request.getPassword(), user.getPassword());
-		if(!checkpw) {
+		if (!checkpw) {
 			return "Invalid Password!! Please enter valid password";
 		}
 		user.setLoggedIn(true);
@@ -201,13 +199,12 @@ public class UserService {
 
 	public String logout(LogoutRequestDto request) {
 		User user = userRepository.findByUsername(request.getUsername());
-			if(user==null) {
-				return "Resister first. Not matched user";
-			}
-			user.setLoggedIn(false);
-			userRepository.save(user);
+		if (user == null) {
+			return "Resister first. Not matched user";
+		}
+		user.setLoggedIn(false);
+		userRepository.save(user);
 		return "Logout Sucessfully";
 	}
-	
 
 }
