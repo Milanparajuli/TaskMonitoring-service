@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.taskmonitoring.system.dto.LoginRequestDto;
+import com.taskmonitoring.system.dto.LoginResponseDto;
 import com.taskmonitoring.system.dto.LogoutRequestDto;
+import com.taskmonitoring.system.dto.LogoutResponseDto;
 import com.taskmonitoring.system.dto.TaskCreateDto;
 import com.taskmonitoring.system.dto.TaskResponseDto;
 import com.taskmonitoring.system.dto.TaskResponseListDto;
@@ -182,29 +184,40 @@ public class UserService {
 		return null;
 	}
 
-	public String login(LoginRequestDto request) {
+	public LoginResponseDto login(LoginRequestDto request) {
+		
+		LoginResponseDto response = new LoginResponseDto();
 		User user = userRepository.findByUsername(request.getUsername());
 		if (user == null) {
-			return "Please Register first. User Dosent Exist";
+			throw new RuntimeException("User Dosent exist");
 		}
 
 		boolean checkpw = BCrypt.checkpw(request.getPassword(), user.getPassword());
 		if (!checkpw) {
-			return "Invalid Password!! Please enter valid password";
+			throw new RuntimeException("Invalid Password. please type your correct password.");
 		}
 		user.setLoggedIn(true);
 		userRepository.save(user);
-		return "Successfully Loggin";
+		
+		
+		response.setUserId(user.getUserId());
+		response.setUsername(user.getUsername());
+		
+		return response;
+		
 	}
 
-	public String logout(LogoutRequestDto request) {
+	public LogoutResponseDto logout(LogoutRequestDto request) {
 		User user = userRepository.findByUsername(request.getUsername());
+		
+		LogoutResponseDto response = new LogoutResponseDto();
 		if (user == null) {
-			return "Resister first. Not matched user";
+			response.setMessage("User Dose not exist. please register first.");
+			return response;
 		}
 		user.setLoggedIn(false);
 		userRepository.save(user);
-		return "Logout Sucessfully";
+		return response;
 	}
 
 }

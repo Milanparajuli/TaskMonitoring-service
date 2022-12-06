@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.taskmonitoring.system.dto.LoginRequestDto;
+import com.taskmonitoring.system.dto.LoginResponseDto;
 import com.taskmonitoring.system.dto.LogoutRequestDto;
+import com.taskmonitoring.system.dto.LogoutResponseDto;
 import com.taskmonitoring.system.dto.UserCreateDto;
 import com.taskmonitoring.system.dto.UserListResponseDto;
 import com.taskmonitoring.system.dto.UserResponseDto;
@@ -73,12 +75,12 @@ public class UserController {
 
 	@PostMapping("/login")
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public String login(@RequestBody LoginRequestDto request) {
+	public LoginResponseDto login(@RequestBody LoginRequestDto request) {
 		return userService.login(request);
 
 	}
 	@PostMapping("logout")
-	public String logout(@RequestBody LogoutRequestDto request) {
+	public LogoutResponseDto logout(@RequestBody LogoutRequestDto request) {
 		return userService.logout(request);
 	}
 
