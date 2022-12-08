@@ -170,6 +170,21 @@ public class UserService {
 
 		return null;
 	}
+	
+	public TaskResponseListDto getTaskByUserId(Long id) {
+		List<TaskResponseDto> taskResponseList = new ArrayList<>();
+		List<Task> taskList = taskRepository.findByUserUserId(id);
+		
+		for (Task task : taskList) {
+			taskResponseList.add(getTaskResponse(task));
+			;
+		}
+		TaskResponseListDto response = new TaskResponseListDto();
+		response.setTask(taskResponseList);
+		response.setTotal(taskResponseList.size());
+		return response;
+//		return null;
+	}
 
 	@Transactional
 	public void deleteById(Long id) {

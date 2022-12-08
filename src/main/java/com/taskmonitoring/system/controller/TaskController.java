@@ -43,6 +43,12 @@ public class TaskController {
 		return userService.getTask(id);
 	}
 	
+	@GetMapping("/by-user-id/{userId}")
+	@ResponseStatus(code= HttpStatus.OK)
+	public TaskResponseListDto getTaskByUserId(@PathVariable Long userId) {
+		return userService.getTaskByUserId(userId);
+	}
+	
 	@PutMapping("by-id/{id}")
 	@ResponseStatus(code= HttpStatus.OK)
 	public Task update(@PathVariable Long id, @RequestBody TaskUpdateDto request) {
