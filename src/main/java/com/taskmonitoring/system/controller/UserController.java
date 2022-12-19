@@ -2,6 +2,7 @@ package com.taskmonitoring.system.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,7 @@ public class UserController {
 
 	@PostMapping
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public UserResponseDto addUser(@RequestBody UserCreateDto request) {
+	public UserResponseDto addUser(@RequestBody @Validated UserCreateDto request) {
 //		System.out.println("Called");
 
 		return userService.addUser(request);
